@@ -14,7 +14,7 @@ names(iris)[1] <- "sepal_length"
 names(iris)[2] <- "sepal_width"
 names(iris)[3] <- "petal_length"
 names(iris)[4] <- "petal_width"
-names(iris)[5] <- "class"
+names(iris)[5] <- "flower_class"
 
 # check whether there is NA in data
 sepal_length_NA <- which(is.na(iris$sepal_length))
@@ -39,8 +39,28 @@ rand.vec <- sample(1:149,119)
 iris.train <- iris[rand.vec, ] 
 iris.test <- iris[-rand.vec, ]
 
+###########################################
 # Multiple logistic regression
+iris.logistic <- glm(flower_class~., data = iris.train, family = binomial())
+
+###########################################
+
+###########################################
 # SVM
+library(e1071)
+iris.svm <- svm(flower_class~., data = iris.train)
+
+# check the model result
+print(iris.svm) 
+summary(iris.svm) # same as above
+
+# testing the model
+iris.pred_svm <- predict(iris.svm, iris.test[,-5])
+table(iris.pred_svm, iris.test$flower_class)
+
+# acc = 31/31 = 100%
+###########################################
+
 
 ###########################################
 # KNN
@@ -51,16 +71,16 @@ iris.pred_kNN <- knn(train = iris.train[,-5], test=iris.test[,-5], cl=iris.train
 
 # evaluate the confusion matrix to get the accuracy
 library(gmodels)
-CrossTable(x = iris.test$class, y = iris.pred_kNN, prop.chisq = F, prop.c = F)
+CrossTable(x = iris.test$flower_class, y = iris.pred_kNN, prop.chisq = F, prop.c = F)
 
-# Acc = 28/30 = 93%
+# Acc = 30/31 = 96%
 ###########################################
 
 ###########################################
 # Decision Tree
 library(C50)
 
-iris.model_C50 <- C5.0(iris.train[,-5], iris.train$class)
+iris.model_C50 <- C5.0(iris.train[,-5], iris.train$flower_class)
 
 # summary of the model
 summary(iris.model_C50)
@@ -74,10 +94,35 @@ iris.pred_DT <- predict(iris.model_C50, iris.test[,-5])
 
 # confusion matrix
 library("gmodels")
-CrossTable(iris.pred_DT, iris.test$class, prop.chisq = F, prop.c = F)
+CrossTable(iris.pred_DT, iris.test$flower_class, prop.chisq = F, prop.c = F)
 
-# Acc = 28/30 = 93%
+# Acc = 31/31 = 100%
 ###########################################
-# using random forest
+
+###########################################
+# Random forest
+library(caret)
+forestcontrol <- trainControl(method="repeatedcv", number=10, repeats = 10)
+iris.forest <- train(iris.train[,-5], iris.train[,5], method="rf", trControl=forestcontrol)
+iris.pred_forest <- predict(iris.forest, iris.test[,-5])
+
+# confusion matrix
+library("gmodels")
+CrossTable(iris.pred_forest, iris.test$flower_class, prop.chisq = F, prop.c = F)
+
+# Acc = 31/31 = 100%
+
+# another random forest function
+iris.forest2 <- randomForest(flower_class~.,data=iris.train)
+iris.pred_forest2 <- predict(iris.forest2, iris.test[,-5])
+
+# confusion matrix
+library("gmodels")
+CrossTable(iris.pred_forest, iris.test$flower_class, prop.chisq = F, prop.c = F)
+
+# Acc = 31/31 = 100%
+##########################################
+
+##########################################
 # using Xboost
 
