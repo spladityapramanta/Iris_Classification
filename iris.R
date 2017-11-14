@@ -125,4 +125,20 @@ CrossTable(iris.pred_forest, iris.test$flower_class, prop.chisq = F, prop.c = F)
 
 ##########################################
 # using Xboost
+library(xgboost)
 
+# xgboost only use data matrix type of data 
+iris.train_matrix <- data.matrix(iris.train)
+iris.test_matrix <- data.matrix(iris.test)
+
+iris.xgb <- xgboost(data = iris.train_matrix[,-5], label = iris.train_matrix[,5], nrounds = 10)
+
+iris.pred_xgb <- predict(iris.xgb,iris.test_matrix[,-5])
+
+# the results are in real number thus need to be converted
+iris.pred_xgbnew <- as.integer(iris.pred_xgb + 1)
+  
+table(iris.pred_xgbnew, iris.test_matrix[,5])
+
+# Acc = 31 / 31 = 100%
+##########################################
