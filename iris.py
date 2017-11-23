@@ -40,6 +40,33 @@ X_Train = Sc_X.fit_transform(X_Train)
 X_Test = Sc_X.transform(X_Test)
 
 ###########################################
+#  logistic regression
+from sklearn.linear_model import LogisticRegression
+classifier = LogisticRegression(random_state = 0)
+classifier.fit(X_Train, Y_Train)
+
+y_pred = classifier.predict(X_Test)
+
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(Y_Test, y_pred)
+###########################################
+
+###########################################
+#  KNN
+from sklearn.neighbors import KNeighborsClassifier
+# k = 12 (as sqrt(149) ~= 12)
+# p = 2 means euclidian distance
+classifier = KNeighborsClassifier(n_neighbors = 12, metric = 'minkowski', p = 2)
+classifier.fit(X_Train, Y_Train)
+
+y_pred = classifier.predict(X_Test)
+
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(Y_Test, y_pred)
+
+###########################################
+
+###########################################
 # SVM
 # Fitting SVM classifier to the Training set
 from sklearn.svm import SVC
