@@ -31,6 +31,13 @@ summary(iris[5]) # result : 49, 50, 50
 #######################
 # CLASSIFICATION PART #
 #######################
+# Feature scaling 
+normalize <- function(x){
+  return ( 
+    (x - min(x))/diff(range(x)) 
+  )
+}
+iris[,1:4] <- as.data.frame(lapply(iris[,1:4], normalize))
 
 # sampling data as train and test
 library(boot)
